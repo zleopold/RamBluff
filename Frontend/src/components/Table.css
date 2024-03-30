@@ -1,0 +1,59 @@
+.table-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #0d6efd; /* Poker table background color */
+  }
+  
+  .table {
+    position: relative;
+    width: 80%;
+    height: 60%;
+    background-color: #006400; /* Poker table felt color */
+    border-radius: 20px;
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+  }
+  
+  .seat {
+    width: 120px;
+    height: 120px;
+    margin: 10px;
+    background-color: #228b22; /* Seat color */
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: white;
+    cursor: pointer;
+    position: relative;
+  }
+  
+  .seat:hover {
+    background-color: #32cd32; /* Hover color */
+  }
+  
+  .seat.occupied {
+    background-color: #ff0000; /* Occupied seat color */
+  }
+  
+  .player-info {
+    position: absolute;
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    color: white;
+  }
+  
+  .player-info p {
+    margin: 0;
+    font-size: 16px;
+  }
+  
