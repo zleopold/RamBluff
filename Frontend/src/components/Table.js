@@ -29,7 +29,8 @@ const Table = () => {
 
   const fetchPlayersAtTable = async () => {
     try {
-      const response = await axios.get('http://localhost:3001/playersAtTable');
+      const tableId = window.location.pathname.slice(-36);
+      const response = await axios.get(`http://localhost:3001/playersAtTable/${tableId}`);
       const players = response.data.players;
       const updatedSeats = seats.map((seat, index) => {
         const player = players.find((p) => p.seat_number === index + 1);
@@ -57,6 +58,7 @@ const Table = () => {
       setStackSize('');
       setSelectedSeatIndex(null);
   
+      // all table ids are of length 36
       const tableId = window.location.pathname.slice(-36);
       // Emit 'confirmSitDown' event to the server with player details and seat index
       socket.emit('confirmSitDown', { playerName, stackSize, selectedSeatIndex, tableId });

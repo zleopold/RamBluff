@@ -1,0 +1,29 @@
+.LaunchGameContainer {
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+}
+
+.LaunchGame {
+    width: 75%;
+    height: 500px;
+    background-image: url("../../public/Images/pokerTableHomePage.png");
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+.LaunchGame a {
+    border: 2px solid rgb(12, 184, 127);
+    background-color: rgb(12, 184, 127);
+    padding: 4px 30px;
+    font-size: 20px;
+    border-radius: 3px;
+    color: black;
+    text-decoration: none;
+    font-weight: 600;
+}

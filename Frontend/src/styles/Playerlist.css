@@ -1,0 +1,14 @@
+.playersList {
+    list-style: none;
+    display: none;
+}
+.playersListHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid rgb(12, 184, 127);
+}
+.togglePlayers {
+    color: black;
+}
