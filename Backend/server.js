@@ -1,5 +1,5 @@
 // -------- Server Packages ------------
-const Player = require('./Logic/Player.js');
+const Player = require('./Logic/player.js');
 const express = require('express');
 const http = require('http');
 const bodyParser = require('body-parser');
