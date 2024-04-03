@@ -1,10 +1,26 @@
 // App.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import io from 'socket.io-client';
 import HomePage from './pages/HomePage'; // Import HomePage component
 import Game from './pages/Game';
 import "./styles/App.css";
+
+const ENDPOINT = 'http://localhost:8080';
+
 const App = () => {
+  useEffect(() => {
+    const socket = io(ENDPOINT);
+
+    socket.on('connect', () => {
+      console.log('Connected to server!');
+    });
+
+    return () => {
+      socket.disconnect(); // Clean up the socket connection
+    };
+  }, []);
+
   return (
     <div className="container">
       <div className="header-container">

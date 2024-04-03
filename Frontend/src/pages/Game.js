@@ -1,12 +1,15 @@
 import React from "react";
-import Players from "../components/Players";
+import Ledger from "../components/Ledger";
+import Seats from "../components/Seats";
 import "../styles/Game.css";
+
 const Game = () => {
     return (
         <div className="GameContainer">
             <div className="game">
 
-            <Players />
+            <Ledger />
+            <Seats/>
             </div>
         </div>
     )

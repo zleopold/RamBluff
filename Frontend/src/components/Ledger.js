@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/Playerlist.css";
 
-const Players = () => {
+const Ledger = () => {
     const [toggle, setToggle] = useState("none");
 
     const togglePlayersList = () => {
@@ -11,7 +11,7 @@ const Players = () => {
     return (
         <div className="Players">
             <div className="playersListHeader">
-                <p className="PlayersHeader">Players</p>
+                <p className="PlayersHeader">Ledger</p>
                 <button className="togglePlayers" onClick={togglePlayersList}>
                     {toggle === "block" ? "X" : 'display'}
                 </button>
@@ -25,5 +25,5 @@ const Players = () => {
     );
 }
 
-export default Players;
+export default Ledger;
 
