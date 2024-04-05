@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Playerlist.css";
+import "../styles/Ledger.css";
 
 const Ledger = () => {
     const [toggle, setToggle] = useState("none");
@@ -13,7 +13,7 @@ const Ledger = () => {
             <div className="playersListHeader">
                 <p className="PlayersHeader">Ledger</p>
                 <button className="togglePlayers" onClick={togglePlayersList}>
-                    {toggle === "block" ? "X" : 'display'}
+                    {toggle === "block" ? "x" : 'v'}
                 </button>
             </div>
             <ul className="playersList" style={{display: toggle}}>
