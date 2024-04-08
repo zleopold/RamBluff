@@ -11,7 +11,7 @@ const Seats = () => {
   const [name, setName] = useState('');
   const [stack, setStack] = useState(0);
   const [seat, setSeat] = useState(0);
-  const [cards, setCards] = useState([]);
+  //const [cards, setCards] = useState([]);
 
   useEffect(() => {
     socket.emit('joinRoom', tableId);
