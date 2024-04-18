@@ -1,35 +1,17 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: frontend-service
+  name: combined-service
 spec:
   selector:
-    app: frontend
+    app: combined
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: backend-service
-spec:
-  selector:
-    app: backend
-  ports:
     - protocol: TCP
       port: 8080
-      targetPort: 3000
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: database-service
-spec:
-  selector:
-    app: database
-  ports:
+      targetPort: 3001
     - protocol: TCP
       port: 3306
       targetPort: 3306
@@ -37,58 +19,26 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend
+  name: combined
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: combined
   template:
     metadata:
       labels:
-        app: frontend
+        app: combined
     spec:
       containers:
       - name: frontend
         image: seanberlin/frontend:1.0.0
         ports:
         - containerPort: 3000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: backend
-spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: backend
-  template:
-    metadata:
-      labels:
-        app: backend
-    spec:
-      containers:
       - name: backend
         image: seanberlin/backend:1.0.0
         ports:
-        - containerPort: 3000
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: database
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: database
-  template:
-    metadata:
-      labels:
-        app: database
-    spec:
-      containers:
+        - containerPort: 3001
       - name: database
         image: seanberlin/database:1.0.0
         ports:
