@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: combined-pod
+spec:
+  containers:
+    - name: frontend
+      image: seanberlin/frontend:1.0.0
+      ports:
+        - containerPort: 3000
+    - name: backend
+      image: seanberlin/backend:1.0.0
+      ports:
+        - containerPort: 3000
+    - name: database
+      image: seanberlin/database:1.0.0
+      ports:
+        - containerPort: 3306
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: combined
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: combined
+  template:
+    metadata:
+      labels:
+        app: combined
+    spec:
+      containers:
+      - name: frontend
+        image: seanberlin/frontend:1.0.0
+        ports:
+        - containerPort: 3000
+      - name: backend
+        image: seanberlin/backend:1.0.0
+        ports:
+        - containerPort: 3001
+      - name: database
+        image: seanberlin/database:1.0.0
+        ports:
+        - containerPort: 3306
