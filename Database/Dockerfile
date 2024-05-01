@@ -4,6 +4,9 @@ FROM mysql:latest
 # Set the root password
 ENV MYSQL_ROOT_PASSWORD=RamBluffRoot
 
+# Create a new database
+#ENV MYSQL_DATABASE=rambluff_db
+
 # Copy the SQL script into the docker-entrypoint-initdb.d directory
 COPY init.sql /docker-entrypoint-initdb.d/
 
