@@ -1,4 +1,7 @@
 -- init.sql
+CREATE DATABASE rambluff_db;
+USE rambluff_db
+
 CREATE TABLE games (
   id VARCHAR(36) NOT NULL PRIMARY KEY,
   status VARCHAR(20) NOT NULL DEFAULT 'active',
