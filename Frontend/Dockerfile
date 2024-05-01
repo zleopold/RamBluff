@@ -19,5 +19,5 @@ RUN npm run build
 # Expose port 3000 to the outside world
 EXPOSE 3000
 
-# Define the command to run your app
-CMD ["npm", "start"]
+# Serve the built React app using a lightweight Node.js server
+CMD ["npx", "serve", "-s", "build"]
