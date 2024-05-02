@@ -1,7 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
 * {
   padding: 0;
   margin: 0;
   color: rgb(5, 94, 129);
+  font-family: "Poppins", sans-serif;
+  font-weight: 100;
+  font-style: normal;
 }
 
 .container {
@@ -14,21 +18,20 @@
 
 .header-container {
   width: 100%;
-  padding: 30px 0;
   display: flex;
   justify-content: center;
 }
 .header {
   text-align: center;
-  width: 75%;
-  border: 1px solid transparent;
-  background-color: rgb(12, 184, 127);
-  padding: 10px 0;
-  border-radius: 5px;
+  width: 100%;
+  border-bottom: solid 1px rgb(12, 184, 127);
+  padding: 20px 0;
 }
 
 .brand {
-  color: black;
-  font-weight: 700;
-  font-size: 25px;
+
+  color: white;
+  font-weight: 500;
+  letter-spacing: 2px;
+  font-size: 30px;
 }

@@ -8,7 +8,7 @@ const Game = () => {
         <div className="GameContainer">
             <div className="game">
 
-            <Ledger />
+            {/* <Ledger /> */}
             <Seats/>
             </div>
         </div>

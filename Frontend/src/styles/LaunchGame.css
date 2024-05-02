@@ -1,21 +1,26 @@
 .LaunchGameContainer {
     width: 100%;
-    height: auto;
+    height: 800px;
+
     display: flex;
     justify-content: center;
+    align-items: center;
 }
 
 .LaunchGame {
     width: 75%;
     height: 500px;
     background-image: url("../../public/Images/pokerTableHomePage.png");
+    background-position: center;
+    background-size: cover;
+    border-radius: 3px;
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
     display: flex;
     justify-content: center;
     align-items: center;
-
+    box-shadow: 0px 10px 10px rgb(12, 184, 127);
 }
 .LaunchGame a {
     border: 2px solid rgb(12, 184, 127);
@@ -26,4 +31,19 @@
     color: black;
     text-decoration: none;
     font-weight: 600;
+}
+.startGameBtn {
+    padding: 10px 25px;
+    font-size: 18px;
+    border-radius: 3px;
+    border-color: transparent;
+    background-color: rgba(0, 0, 0, 0.686);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+
+}
+.startGameBtn:hover {
+    padding: 15px 35px;
+    background-color: rgb(0, 0, 0);
 }
