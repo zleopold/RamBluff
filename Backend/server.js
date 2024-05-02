@@ -321,13 +321,13 @@ io.on('connection', (socket) => {
     dealer.flipCard();
 
     io.to(tableId).emit('updateDealer', dealer);
-    console.log('dealers hand before', dealer.hand);
     let dealerHandVal = calculateHand(dealer.hand);
     while (dealerHandVal < 16) {
       dealer.dealCardDealer();
       dealerHandVal = calculateHand(dealer.hand);
     }
-    console.log('Dealers hand', dealerHandVal);
+    console.log('Dealers hand', dealer.hand);
+    console.log('Dealer has', dealerHandVal);
     io.to(tableId).emit('updateDealer', dealer);
     if (dealerHandVal > 21) {
       for (const player of players) {
