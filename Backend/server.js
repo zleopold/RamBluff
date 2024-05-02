@@ -333,7 +333,7 @@ io.on('connection', (socket) => {
       for (const player of players) {
         let playerHandVal = calculateHand(player.cards);
         console.log('Player Cards:', player.cards);
-        if (playerHandVal < 21) {
+        if (playerHandVal < 21 || playerHandVal == 21) {
           let wnum = calculateHand(player.cards);
           console.log('Player wins with:', wnum);
           let winnings = +player.currentBet + +player.currentBet;
