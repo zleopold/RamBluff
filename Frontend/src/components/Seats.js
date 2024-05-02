@@ -134,14 +134,15 @@ const Seats = () => {
 
 
   return (
-    <div>
-      <h2>Players</h2>
+    <div className='seats'>
+      <h2 className='playersHeader'>Players</h2>
       {/* Display playerData */}
+      <div className='players'>
       {Array.isArray(playerData) && playerData.map((item, index) => (
         <div key={index}>
           {/* Check if item is not null and render player object properties */}
           {item !== null && (
-            <div>
+            <div className='player'>
               {item.name} ({item.stack}) {' '}
               {item.cards.length !== 0 && (
                 <>
@@ -155,49 +156,52 @@ const Seats = () => {
               )}
               {' '}Current Bet:{' '} {item.currentBet} {' '}
               {!showForm && index === seatRef.current &&
-                <button onClick={() => { setShowForm(true); handleLeaveSeat(); }}>Leave Seat</button>}
+                <button onClick={() => { setShowForm(true); handleLeaveSeat(); }} className='leaveSeatBtn'>Leave Seat</button>}
             </div>
           )}
         </div>
       ))}
+  </div>
+
 
       {/* Show form if not already sitting */}
       {showForm && (
-        <form onSubmit={(e) => e.preventDefault()}>
+        <form onSubmit={(e) => e.preventDefault()} className='playerSignup'>
           <label>
             Name:
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <input className="inputField" type="text" value={name} onChange={(e) => setName(e.target.value)} />
           </label>
           <label>
             Stack Size:
-            <input type="number" value={stack} onChange={(e) => setStack(parseInt(e.target.value))} />
+            <input className="inputField" type="number" value={stack} onChange={(e) => setStack(parseInt(e.target.value))} />
           </label>
           {/* Seat input removed */}
-          <button onClick={handleSitDown}>Sit Down</button>
+          <button onClick={handleSitDown} className='sitdownBtn'>Sit Down</button>
         </form>
       )}
       <div>
         {/* Show "Start Game" button for host */}
         {playerData.length >= 2 && host === true && !inGame && (
-          <button onClick={handleStartGame}>Start Game</button>
+          <button onClick={handleStartGame} className='initGameBtn'>Start Game</button>
         )}
       </div>
       <div>
         {turnRef.current === seatRef.current && preRound && inGame && (
-          <><input type="number" value={bet} onChange={handleBetChange} /><button onClick={() => handleBet(bet)}>
+          <><input className="inputField" type="number" value={bet} onChange={handleBetChange} /><button onClick={() => handleBet(bet)} className='betBtn'>
             Bet
           </button></>
         )}
       </div>
       <div>
         {turnRef.current === seatRef.current && !preRound && inGame && (
-          <button onClick={handleHit}> Hit </button>
+          <button onClick={handleHit} className='hitBtn'> Hit </button>
         )}
         {turnRef.current === seatRef.current && !preRound && inGame && (
-          <button onClick={handleStay}> Stay </button>
+          <button onClick={handleStay} className='standBtn'> Stay </button>
         )}
       </div>
       <div>
+        <div className='dealer'>
         <h2>Dealer</h2>
         {inGame && hasDealer && dealerRef.current.hand !== null && (
           <span>
@@ -209,6 +213,7 @@ const Seats = () => {
             ))}
           </span>
         )}
+    </div>
       </div>
 
     </div>

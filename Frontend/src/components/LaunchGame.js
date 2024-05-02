@@ -18,7 +18,7 @@ const LaunchGame = () => {
     return (
         <div className="LaunchGameContainer">
             <div className="LaunchGame">
-                <button onClick={handleStartGame}>Start Game</button>
+                <button onClick={handleStartGame} className="startGameBtn">Launch</button>
             </div>
         </div>
     )

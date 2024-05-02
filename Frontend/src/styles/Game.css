@@ -1,8 +1,125 @@
 .GameContainer {
     width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 50px;
+
+}
+.game {
+    width: 50%;
     display: flex;
     justify-content: center;
 }
-.game {
-    width: 75%;
+
+.playersHeader {
+    color: white;
+    font-weight: 300;
+}
+
+.players {
+    border: solid 1px white;
+    padding: 10px 30px;
+    margin-top: 10px;
+}
+.player {
+    color: white;
+    font-size: 18px;
+    margin: 10px 0px;
+}
+.leaveSeatBtn {
+    background-color: transparent;
+    border: solid 1px rgb(12, 184, 127);
+    color: white;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.initGameBtn {
+    background-color: rgb(12, 184, 127);
+    border-color: transparent;
+    border-radius: 3px;
+    color: black;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-weight: 800;
+
+}
+
+.inputField {
+    background-color: transparent;
+    border: solid 1px rgb(12, 184, 127);
+    border-radius: 2px;
+    padding: 5px 10px;
+    margin: 0px 5px;
+    color: white;
+}
+
+.playerSignup {
+    padding: 20px 0px 10px 0px;
+}
+
+.playerSignup label {
+    color: white;
+    padding: 0px 10px;
+}
+.sitdownBtn {
+    background-color: rgb(12, 184, 127);
+    border-color: transparent;
+    border-radius: 3px;
+    color: black;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-weight: 800;
+    font-size: 13px;
+}
+.betBtn {
+    background-color: rgb(12, 184, 127);
+    border-color: transparent;
+    border-radius: 3px;
+    color: black;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin: 10px 0;
+    font-weight: 800;
+    font-size: 13px;
+}
+.player span {
+    color: rgb(12, 184, 127);
+    font-weight: 500;
+}
+
+.hitBtn {
+    background-color: rgb(12, 184, 127);
+    border-color: transparent;
+    border-radius: 3px;
+    color: black;
+    padding: 5px 30px;
+    cursor: pointer;
+    margin: 10px 5px;
+    font-weight: 800;
+    font-size: 13px;
+}
+.standBtn {
+    background-color: transparent;
+    border : solid 1px rgb(12, 184, 127);
+    border-radius: 3px;
+    color: white;
+    padding: 5px 20px;
+    cursor: pointer;
+    margin: 10px 5px;
+    font-weight: 500;
+    font-size: 13px;
+}
+
+.dealer h2 {
+    color: white;
+    font-weight: 300;
+}
+.dealer span {
+    color: rgb(12, 184, 127);
+    font-weight: 500;
 }
