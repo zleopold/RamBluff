@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 const ENDPOINT = 'http://localhost:8080'; // Your server endpoint
 const socket = io.connect(ENDPOINT);
@@ -8,28 +8,22 @@ const Seats = () => {
   const [playerData, setPlayerData] = useState([]);
   const [showForm, setShowForm] = useState(true);
   const [host, setHost] = useState(false);
+  const [hasDealer, setHasDealer] = useState(false);
+  const dealerRef = useRef(null);
   const [curPlayer, setPlayer] = useState(null);
   const [name, setName] = useState('');
   const [stack, setStack] = useState(0);
-  const [seat, setSeat] = useState(null);
-  const [pot, setPot] = useState(0);
-  const [isTurn, setIsTurn] = useState(0);
+  const seatRef = useRef();
+  const turnRef = useRef(0);
   const [inGame, setInGame] = useState(false);
-  const [isFirstRound, setIsFirstRound] = useState(true);
-  const [tableBet, setTableBet] = useState(20);
-  const [currentBet, setCurrentBet] = useState(0);
-  const [comCards, setComCards] = useState([]);
-  const [cantCheck, setCantCheck] = useState(false);
-  const [cantRaise, setCantRaise] = useState(false);
-  const [cantCall, setCantCall] = useState(false);
-  const [allIn, setAllIn] = useState(false);
-  const [raise, setRaise] = useState(tableBet * 2)
+  const [preRound, setPreRound] = useState(true);
+  const [bet, setBet] = useState(0);
+  const [update, setUpdate] = useState(0);
 
   useEffect(() => {
     socket.emit('joinRoom', tableId);
 
     socket.on('playersInRoom', (players) => {
-      console.log('playersInRoom')
       setPlayerData(players);
     })
 
@@ -43,7 +37,7 @@ const Seats = () => {
 
     socket.on('setSeat', (player) => {
       let seatNum = player.seat
-      setSeat(seatNum);
+      seatRef.current = seatNum;
     })
 
     socket.on('setPlayer', (player) => {
@@ -58,46 +52,42 @@ const Seats = () => {
       setInGame(true);
     })
 
-    socket.on('setPreFlop', (players) => {
-      for (let i = 0; i < players.length; i++) {
-        if (players[i].big === true) {
-          if (players[i + 1] != null) {
-            setIsTurn(i+1);
-          } else
-            setIsTurn(0);
-        }
-        if (players[i].seat === seat && players[i].small === true){
-          setCurrentBet(10);
-        }
-        if(players[i].seat === seat && players[i].big === true){
-          setCurrentBet(20);
-        }
-      }
-    
+    socket.on('setDealer', (newDealer) => {
+      setHasDealer(true);
+      dealerRef.current = newDealer;
+    })
+    socket.on('updateDealer', (newDealer) => {
+      dealerRef.current = newDealer;
     })
 
-    socket.on('setFlop', ({ flop, pot, players }) => {
-
-    })
 
     socket.on('setAction', (newSeat) => {
-      setIsTurn(newSeat);
+      turnRef.current = newSeat;
+      let x = update;
+      setUpdate(x + 1);
     })
 
-    setRaise(tableBet * 2);
-    if (tableBet > currentBet) {
-      setCantCheck(true);
-    }
-    if (stack === 0) {
-      setCantCall();
-      setAllIn(true);
-    }
-    if (stack === 0 || stack > tableBet) {
-      setCantRaise();
-    }
+    socket.on('notPreRound', () => {
+      setPreRound(false);
+    })
 
+    socket.on('isPreRound', () => {
+      setPreRound(true);
+    })
 
-  }, [tableBet, stack, currentBet, seat, isTurn]);
+    socket.on('checkDealt21', () => {
+      socket.emit('checkingDealt21', (tableId));
+    })
+
+    socket.on('playerTurnOver', () => {
+      socket.emit('dealersTurn', (tableId));
+    })
+
+    socket.on('checkHand', () => {
+
+    })
+
+  }, [update]);
 
   // Function to handle "Sit Down" button click
   const handleSitDown = () => {
@@ -105,7 +95,7 @@ const Seats = () => {
       alert('Please enter valid information.');
       return;
     }
-
+    let seat = seatRef.current;
     socket.emit('sittingDown', { name, stack, seat, tableId });
     setShowForm(false);
   };
@@ -119,68 +109,52 @@ const Seats = () => {
     setInGame(true);
   };
 
-  const handleCheck = () => {
-    if (isFirstRound) {
-      socket.emit('frCheck', { tableId, seat });
-    } else {
-      socket.emit('check', { tableId, seat });
-    }
+
+
+  const handleBetChange = (event) => {
+    setBet(event.target.value);
   };
 
-  const handleRaiseChange = (event) => {
-    setRaise(event.target.value);
+  const handleBet = () => {
+    let seat = seatRef.current;
+    socket.emit('playerBet', ({ tableId, seat, bet }));
   };
 
-  const handleRaise = (raise) => {
-    setTableBet(raise);
-    setStack(stack - raise);
-    if (isFirstRound) {
-      socket.emit('frRaise', { tableId, raise, seat });
-    } else {
-      socket.emit('raise', { tableId, raise, seat });
-    }
-  };
-  const handleCall = () => {
-    setStack(stack - tableBet);
-    if (isFirstRound) {
-      socket.emit('frCall', { tableId, tableBet, seat });
-    } else {
-      socket.emit('call', { tableId, tableBet, seat });
-    }
+  const handleHit = () => {
+    let seat = seatRef.current;
+    socket.emit('playerHit', ({ tableId, seat }))
+  
+  }
 
-  };
-  const handleFold = () => {
-    if (isFirstRound) {
-      socket.emit('frFold', { tableId, seat })
-    } else {
-      socket.emit('fold', { tableId, seat })
-    }
-  };
+  const handleStay = () => {
+    let seat = seatRef.current;
+    socket.emit('playerStay', ({ tableId, seat }))
+  }
+
+
 
   return (
     <div>
       <h2>Players</h2>
       {/* Display playerData */}
-      {playerData.map((item, index) => (
+      {Array.isArray(playerData) && playerData.map((item, index) => (
         <div key={index}>
           {/* Check if item is not null and render player object properties */}
           {item !== null && (
             <div>
-              Seat {index + 1}: {item.name} ({item.stack}) {' '}
-              {index === seat &&
+              {item.name} ({item.stack}) {' '}
+              {item.cards.length !== 0 && (
                 <>
-                  [{item.cards[0]} {' '} {item.cards[1]}]{' '}
+                  {item.cards.map((card, index) => (
+                    <span key={index}>
+                      {card}
+                      {index !== item.cards.length - 1 && ' '}
+                    </span>
+                  ))}
                 </>
-              }
-              {index !== seat && item.cards.length !== 0 &&
-                <>
-                  [x x]{' '}
-                </>
-              }
-              Small: {item.small ? 'true' : 'false'}{' '}
-              Big: {item.big ? 'true' : 'false'}{' '}
-              Current Bet: {item.currentBet}{' '}
-              {!showForm && index === seat &&
+              )}
+              {' '}Current Bet:{' '} {item.currentBet} {' '}
+              {!showForm && index === seatRef.current &&
                 <button onClick={() => { setShowForm(true); handleLeaveSeat(); }}>Leave Seat</button>}
             </div>
           )}
@@ -207,32 +181,32 @@ const Seats = () => {
         {playerData.length >= 2 && host === true && !inGame && (
           <button onClick={handleStartGame}>Start Game</button>
         )}
-        {isTurn === seat && inGame && (
-          <button onClick={handleCheck} disabled={cantCheck}>Check </button>
-        )}
-        {isTurn === seat && inGame && (
-          <><input type="number" value={raise} onChange={handleRaiseChange} /><button onClick={() => handleRaise(raise)} disabled={cantRaise}>
-            Raise
+      </div>
+      <div>
+        {turnRef.current === seatRef.current && preRound && inGame && (
+          <><input type="number" value={bet} onChange={handleBetChange} /><button onClick={() => handleBet(bet)}>
+            Bet
           </button></>
         )}
-        {isTurn === seat && inGame && (
-          <button onClick={handleCall} disabled={cantCall}>Call </button>
+      </div>
+      <div>
+        {turnRef.current === seatRef.current && !preRound && inGame && (
+          <button onClick={handleHit}> Hit </button>
         )}
-        {isTurn === seat && inGame && (
-          <button onClick={handleFold}>Fold </button>
+        {turnRef.current === seatRef.current && !preRound && inGame && (
+          <button onClick={handleStay}> Stay </button>
         )}
       </div>
       <div>
-        {inGame && (
+        <h2>Dealer</h2>
+        {inGame && hasDealer && dealerRef.current.hand !== null && (
           <span>
-            Current Pot: {pot}
-          </span>
-        )}
-      </div>
-      <div>
-        {inGame && (
-          <span>
-            Board: {comCards}
+            {dealerRef.current.hand.map((card, index) => (
+              <span key={index}>
+                {card}{' '}{dealerRef.upsideDownCard}
+                {index !== dealerRef.current.hand - 1 && ' '}
+              </span>
+            ))}
           </span>
         )}
       </div>
