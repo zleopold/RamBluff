@@ -1,5 +1,5 @@
 import React from "react";
-import Ledger from "../components/Ledger";
+// import Ledger from "../components/Ledger";
 import Seats from "../components/Seats";
 import "../styles/Game.css";
 

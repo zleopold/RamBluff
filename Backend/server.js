@@ -42,31 +42,56 @@ const io = socketIO(server, {
 app.use("/admin", adminRoutes);
 app.use("/util", utilRoutes);
 
-// Holds players in all rooms
+// Holds players and dealers in all rooms
 const rooms = new Map();
 const dealers = new Map();
+
+// This is to stop dealerTurn from being caught multiple times
+const endRound = new Map();
 
 
 function calculateHand(hand) {
   let total = 0;
-  hand.map(card => {
-    let val = card.split('')[0];
-    let val_int;
-    if (val === 'K' || val === 'Q' || val === 'J') {
-      val_int = 10;
-    } else if (val === 'A') {
-      if (11 + total > 21) { val_int = 1; }
-      else { val_int = 11; }
-    } else { val_int = parseInt(val); }
+  let aces = 0;
 
-    total += val_int
-  })
+  for (var i = 0; i < hand.length; i++) {
+    let curCard = hand[i];
+    let ace = curCard.charAt(0);
+    if (ace === 'A') {
+      aces++;
+    } else {
+      let face = curCard.charAt(0);
+      if (face === 'J' || face === 'Q' || face === 'K') {
+        //  console.log('oldtotalface', total);
+        total += 10;
+        //  console.log('newtotalface', total);
+      } else if (curCard.length === 3) { // Corrected this line
+        total += 10;
+      } else {
+        total += parseInt(face);
+      }
+      // console.log('oldtotalnum', total);
+    }
+  }
+  for (var j = aces; j > 0; j--) {
+    if (total > (11 - j)) {
+      // console.log('oldtotalace1', total);
+      total += 1;
+      //  console.log('newtotalace1', total);
+
+    } else {
+      //  console.log('oldtotalace11', total);
+      total += 11;
+      // console.log('newtotalace11', total);
+    }
+  }
   return total;
 
 }
 
+
 io.on('connection', (socket) => {
-  // Adds new player to room
+  // Adds new player to socket room
   socket.on('joinRoom', (tableId) => {
     socket.join(tableId);
 
@@ -75,14 +100,18 @@ io.on('connection', (socket) => {
       const playersArray = new Array(10).fill(null);
       rooms.set(tableId, playersArray);
       const dealer = new Dealer();
+
+      // Add a dealer for the table
       dealers.set(tableId, dealer);
     }
+    // Updates the current player list for when a new player joins
     io.to(tableId).emit('playersInRoom', rooms.get(tableId));
   });
 
 
 
   socket.on('sittingDown', ({ name, stack, seat, tableId }) => {
+    // Creates new player object
     const player = new Player(name, stack, seat, tableId);
     const players = rooms.get(tableId)
 
@@ -90,7 +119,8 @@ io.on('connection', (socket) => {
     while (index < players.length && players[index]) {
       index++;
     }
-    // Add new player to list
+    // Add new player to list, assign their seat, update map
+    // If it is the first player to join, they are host
     if (index < players.length) {
       player.seat = index;
       players[index] = player;
@@ -98,10 +128,13 @@ io.on('connection', (socket) => {
       if (player.seat == 0) {
         socket.emit('setHost');
       }
-
-      // Sends new player to client and player list to all clients
+      
+      // Sets seat on front end, for mapping of players
       socket.emit('setSeat', player);
+
+      // Sets player object on front end for logic checks
       socket.emit('setPlayer', player);
+  // Sends new player to player list to all clients
       io.to(tableId).emit('satDown', players);
     } else {
       socket.emit('noSeats');
@@ -177,7 +210,7 @@ io.on('connection', (socket) => {
           dealer.dealUpsideDownCardDealer();
           dealers.set(tableId, dealer);
           io.to(tableId).emit('updateDealer', dealer);
-          io.to(tableId).emit('checkDealt21');
+          // io.to(tableId).emit('checkDealt21');
           io.to(tableId).emit('setAction', 0);
 
         }
@@ -209,7 +242,6 @@ io.on('connection', (socket) => {
 
   socket.on('playerHit', ({ tableId, seat }) => {
     // Get list of players, filter out null
-    console.log('playerHit');
     var players = rooms.get(tableId);
     players = players.filter(element => element !== undefined);
     players = players.filter(player => player !== null);
@@ -219,17 +251,23 @@ io.on('connection', (socket) => {
 
     for (const player of players) {
       if (player.seat == seat) {
+        if (calculateHand(player.cards) > 21) {
+          return;
+        }
         var dealer = dealers.get(tableId);
         let card = dealer.getCard();
         player.cards.push(card);
         dealers.set(tableId, dealer);
+
       }
+      rooms.set(tableId, players);
     }
     io.to(tableId).emit('playersInRoom', players);
+    io.to(tableId).emit('pageUpdate');
     io.to(tableId).emit('checkHand');
 
   })
-
+  var count = 0;
   socket.on('playerStay', ({ tableId, seat }) => {
     // Get list of players, filter out null
     var players = rooms.get(tableId);
@@ -237,7 +275,11 @@ io.on('connection', (socket) => {
     players = players.filter(player => player !== null);
     players = players.filter(player => player.stack !== 0);
     players = players.filter(player => player.cards.length != 0);
-    
+
+    console.log('playerStayed', count);
+    count++;
+
+
 
     let newSeat;
     if (players[seat + 1] != null) {
@@ -245,14 +287,29 @@ io.on('connection', (socket) => {
       io.to(tableId).emit('setAction', newSeat);
     }
     for (const player of players) {
+      console.log('last?', player.lastToAct);
+      console.log('seat', player.seat);
       if (player.seat == seat && player.lastToAct) {
-        socket.emit('playerTurnOver')
+        console.log('pseat = seat and last');
+        socket.emit('playerTurnOver');
+      } else if (players.length == 1) {
+        console.log('plength = 1');
+        socket.emit('playerTurnOver');
       }
     }
 
   })
 
   socket.on('dealersTurn', (tableId) => {
+
+    var isCaught = endRound.get(tableId) != null;
+    if (!isCaught) {
+      endRound.set(tableId, 'dealersTurn');
+    } else {
+      return;
+    }
+
+
     // Get list of players, filter out null
     var players = rooms.get(tableId);
     players = players.filter(player => player !== null);
@@ -264,19 +321,29 @@ io.on('connection', (socket) => {
     dealer.flipCard();
 
     io.to(tableId).emit('updateDealer', dealer);
+    console.log('dealers hand before', dealer.hand);
     let dealerHandVal = calculateHand(dealer.hand);
-    console.log('dealer hand', dealerHandVal);
-      while (dealerHandVal < 16) {
-        console.log('socket', socket.id);
-        console.log('< 16:', dealer.hand)
-        dealer.dealCardDealer();
-        dealerHandVal = calculateHand(dealer.hand);
-      }
+    while (dealerHandVal < 16) {
+      dealer.dealCardDealer();
+      dealerHandVal = calculateHand(dealer.hand);
+    }
+    console.log('Dealers hand', dealerHandVal);
+    io.to(tableId).emit('updateDealer', dealer);
     if (dealerHandVal > 21) {
-      console.log('socket', socket.id);
-      console.log('> 21:', dealer.hand)
       for (const player of players) {
-        player.stack = player.currentBet * 2;
+        let playerHandVal = calculateHand(player.cards);
+        console.log('Player Cards:', player.cards);
+        if (playerHandVal < 21) {
+          let wnum = calculateHand(player.cards);
+          console.log('Player wins with:', wnum);
+          let winnings = +player.currentBet + +player.currentBet;
+          player.stack += +player.currentBet;
+          player.stack += winnings;
+
+        } else {
+          let num = calculateHand(player.cards);
+          console.log('Player loses with:', num);
+        }
         player.currentBet = 0;
         player.cards = [];
       }
@@ -285,48 +352,80 @@ io.on('connection', (socket) => {
       dealer.resetDeck();
       dealer.shuffle();
       io.to(tableId).emit('playersInRoom', players);
+      io.to(tableId).emit('updateDealer', dealer);
       io.to(tableId).emit('isPreRound');
       io.to(tableId).emit('setAction', 0);
+      io.to(tableId).emit('newRound');
+      return;
     }
     if (dealerHandVal == 21) {
       console.log('socket', socket.id);
-      console.log('= 21:', dealer.hand)
       for (const player of players) {
         let playerHandVal = calculateHand(player.cards);
+        console.log('Player Cards:', player.cards);
         if (playerHandVal == 21) {
-          player.stack = player.currentBet * 2;
-          player.currentBet = 0;
-          player.cards = [];
+          let wnum = calculateHand(player.cards);
+          console.log('Player wins with:', wnum);
+          let winnings = +player.currentBet + +player.currentBet;
+          player.stack += +player.currentBet;
+          player.stack += winnings;
+
+        } else {
+          let num = calculateHand(player.cards);
+          console.log('Player loses with:', num);
         }
+        player.currentBet = 0;
+        player.cards = [];
       }
       dealer.hand = []
       dealer.upsideDownCard = '';
       dealer.resetDeck();
       dealer.shuffle();
       io.to(tableId).emit('playersInRoom', players);
+      io.to(tableId).emit('updateDealer', dealer);
       io.to(tableId).emit('isPreRound');
       io.to(tableId).emit('setAction', 0);
+      io.to(tableId).emit('newRound');
+      return;
     }
     if (dealerHandVal < 21) {
-      console.log('socket', socket.id);
-      console.log('< 21:', dealer.hand)
       for (const player of players) {
         let playerHandVal = calculateHand(player.cards);
-        if (playerHandVal > dealerHandVal) {
-          player.stack = player.currentBet * 2;
-          player.currentBet = 0;
-          player.cards = [];
+        console.log('Player Cards:', player.cards);
+        if (playerHandVal > dealerHandVal && playerHandVal < 21) {
+          let wnum = calculateHand(player.cards);
+          console.log('Player wins with:', wnum);
+
+          let winnings = +player.currentBet + +player.currentBet;
+          player.stack += +player.currentBet;
+          player.stack += winnings;
+
+        } else {
+          let num = calculateHand(player.cards);
+          console.log('Player loses with:', num);
         }
+
+        player.currentBet = 0;
+        player.cards = [];
       }
       dealer.hand = [];
       dealer.upsideDownCard = '';
       dealer.resetDeck();
       dealer.shuffle();
       io.to(tableId).emit('playersInRoom', players);
+      io.to(tableId).emit('updateDealer', dealer);
       io.to(tableId).emit('isPreRound');
       io.to(tableId).emit('setAction', 0);
+      //this is used to update endRound which stops from multiple emission catches
+      io.to(tableId).emit('newRound');
+      return;
     }
+
   })
+
+  socket.on('resetEndRound', (tableId) => {
+    endRound.set(tableId, null);
+  });
 
 
 });

@@ -60,6 +60,10 @@ const Seats = () => {
       dealerRef.current = newDealer;
     })
 
+    socket.on('pageUpdate' , () => {
+      let x = update;
+      setUpdate(x+1);
+    })
 
     socket.on('setAction', (newSeat) => {
       turnRef.current = newSeat;
@@ -85,6 +89,10 @@ const Seats = () => {
 
     socket.on('checkHand', () => {
 
+    })
+
+    socket.on('newRound', () => {
+      socket.emit('resetEndRound', (tableId));
     })
 
   }, [update]);
@@ -123,11 +131,12 @@ const Seats = () => {
   const handleHit = () => {
     let seat = seatRef.current;
     socket.emit('playerHit', ({ tableId, seat }))
-  
+
   }
 
   const handleStay = () => {
     let seat = seatRef.current;
+    console.log('stayed');
     socket.emit('playerStay', ({ tableId, seat }))
   }
 
@@ -138,30 +147,30 @@ const Seats = () => {
       <h2 className='playersHeader'>Players</h2>
       {/* Display playerData */}
       <div className='players'>
-      {Array.isArray(playerData) && playerData.map((item, index) => (
-        <div key={index}>
-          {/* Check if item is not null and render player object properties */}
-          {item !== null && (
-            <div className='player'>
-              {item.name} ({item.stack}) {' '}
-              {item.cards.length !== 0 && (
-                <>
-                  {item.cards.map((card, index) => (
-                    <span key={index}>
-                      {card}
-                      {index !== item.cards.length - 1 && ' '}
-                    </span>
-                  ))}
-                </>
-              )}
-              {' '}Current Bet:{' '} {item.currentBet} {' '}
-              {!showForm && index === seatRef.current &&
-                <button onClick={() => { setShowForm(true); handleLeaveSeat(); }} className='leaveSeatBtn'>Leave Seat</button>}
-            </div>
-          )}
-        </div>
-      ))}
-  </div>
+        {Array.isArray(playerData) && playerData.map((item, index) => (
+          <div key={index}>
+            {/* Check if item is not null and render player object properties */}
+            {item !== null && (
+              <div className='player'>
+                {item.name} ({item.stack}) {' '}
+                {item.cards.length !== 0 && (
+                  <>
+                    {item.cards.map((card, index) => (
+                      <span key={index}>
+                        {card}
+                        {index !== item.cards.length - 1 && ' '}
+                      </span>
+                    ))}
+                  </>
+                )}
+                {' '}Current Bet:{' '} {item.currentBet} {' '}
+                {!showForm && index === seatRef.current &&
+                  <button onClick={() => { setShowForm(true); handleLeaveSeat(); }} className='leaveSeatBtn'>Leave Seat</button>}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
 
 
       {/* Show form if not already sitting */}
@@ -202,18 +211,27 @@ const Seats = () => {
       </div>
       <div>
         <div className='dealer'>
-        <h2>Dealer</h2>
-        {inGame && hasDealer && dealerRef.current.hand !== null && (
-          <span>
-            {dealerRef.current.hand.map((card, index) => (
-              <span key={index}>
-                {card}{' '}{dealerRef.upsideDownCard}
-                {index !== dealerRef.current.hand - 1 && ' '}
-              </span>
-            ))}
-          </span>
-        )}
-    </div>
+          <h2>Dealer</h2>
+          {inGame && hasDealer && dealerRef.current.hand !== null && (
+            <span>
+              {/* Map over each card in the dealer's hand */}
+              {dealerRef.current.hand.map((card, index) => (
+                <span key={index}>
+                  {/* Display the card */}
+                  {card}{' '}
+                  {/* Add a space if it's not the last card */}
+                  {index !== dealerRef.current.hand.length - 1 && ' '}
+                </span>
+              ))}
+              {/* Display the upside down card if it exists */}
+              {dealerRef.current.upsideDownCard && (
+                <span>
+                  {dealerRef.current.upsideDownCard}{' '}
+                </span>
+              )}
+            </span>
+          )}
+        </div>
       </div>
 
     </div>
