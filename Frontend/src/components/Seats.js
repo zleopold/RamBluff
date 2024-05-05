@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
-const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'http://localhost:8080';
+const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT;
 const socket = io.connect(ENDPOINT);
 const tableId = window.location.pathname.slice(-36);
 

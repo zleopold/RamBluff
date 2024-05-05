@@ -6,7 +6,7 @@ import HomePage from './pages/HomePage'; // Import HomePage component
 import Game from './pages/Game';
 import "./styles/App.css";
 
-const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'http://localhost:8080';
+const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT;
 
 const App = () => {
   useEffect(() => {

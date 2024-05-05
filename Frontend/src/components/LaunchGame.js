@@ -1,7 +1,7 @@
 import React from "react";
 import axios from 'axios';
 import "../styles/LaunchGame.css";
-const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'http://localhost:8080';
+const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT;
 const LaunchGame = () => {
     const handleStartGame = async () => {
 
