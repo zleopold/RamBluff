@@ -15,6 +15,7 @@ const { table } = require('console');
 const app = express();
 const port = 8080;
 const server = http.createServer(app);
+const ENDPOINT = process.env.NODE_APP_FRONTEND_ENDPOINT || 'http://localhost:3000';
 
 
 
@@ -26,14 +27,14 @@ app.use('/socket.io', express.static(__dirname + '/node_modules/socket.io/client
 
 // Permissions
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ENDPOINT,
   methods: ['GET', 'POST'],
   credentials: true,
 }));
 
 const io = socketIO(server, {
   cors: {
-    origin: 'http://localhost:3000',
+    origin: ENDPOINT,
     methods: ['GET', 'POST'],
     credentials: true,
   },

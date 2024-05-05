@@ -1,11 +1,12 @@
 import React from "react";
 import axios from 'axios';
 import "../styles/LaunchGame.css";
+const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT || 'http://localhost:8080';
 const LaunchGame = () => {
     const handleStartGame = async () => {
 
         try{
-            const response = await axios.post(`http://localhost:8080/admin/createTable`);
+            const response = await axios.post(ENDPOINT + `/admin/createTable`);
             console.log('GameID:' , response.data.gameId);
             const gameId = response.data.gameId;
             console.log('GameID:', gameId);
