@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../styles/Ledger.css";
+//import "../styles/Ledger.css";
 
 const Ledger = () => {
     const [toggle, setToggle] = useState("none");
