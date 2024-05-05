@@ -62,27 +62,19 @@ function calculateHand(hand) {
     } else {
       let face = curCard.charAt(0);
       if (face === 'J' || face === 'Q' || face === 'K') {
-        //  console.log('oldtotalface', total);
         total += 10;
-        //  console.log('newtotalface', total);
-      } else if (curCard.length === 3) { // Corrected this line
+      } else if (curCard.length === 3) { 
         total += 10;
       } else {
         total += parseInt(face);
       }
-      // console.log('oldtotalnum', total);
     }
   }
   for (var j = aces; j > 0; j--) {
     if (total > (11 - j)) {
-      // console.log('oldtotalace1', total);
       total += 1;
-      //  console.log('newtotalace1', total);
-
     } else {
-      //  console.log('oldtotalace11', total);
       total += 11;
-      // console.log('newtotalace11', total);
     }
   }
   return total;
@@ -91,7 +83,6 @@ function calculateHand(hand) {
 
 
 io.on('connection', (socket) => {
-  // Adds new player to socket room
   socket.on('joinRoom', (tableId) => {
     socket.join(tableId);
 
