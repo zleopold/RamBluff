@@ -6,7 +6,9 @@ const db = require("../Database/connection");
 
 // ------------ Table Routes ----------------
 const createTable = (callback) => {
+    console.log('createTable Called')
     const gameId = uuidv4();
+    console.log('game ID:', gameId)
     console.log('Game created:', gameId);
     const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
     db.query(insertSql, [gameId, 'active'], (error, results) => {
