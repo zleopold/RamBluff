@@ -13,7 +13,7 @@ const db = require("./Database/connection");
 
 
 // API Routes
-const { utilRoutes, adminRoutes } = require("./API/routes").default;
+const { utilRoutes, adminRoutes } = require("./API/routes");
 const { table } = require('console');
 
 const app = express();

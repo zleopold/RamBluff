@@ -1,7 +1,7 @@
-import { Router } from "express";
-const router = Router();
-import { v4 as uuidv4 } from 'uuid';
-import { query } from "../Database/connection";
+const express = require("express");
+const router = express.Router();
+const { v4: uuidv4 } = require('uuid');
+const db = require("../Database/connection");
 
 
 
@@ -11,7 +11,7 @@ const createTable = (callback) => {
     const gameId = uuidv4();
     console.log('Game created:', gameId);
     const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
-    query(insertSql, [gameId, 'active'], (error, results) => {
+    db.query(insertSql, [gameId, 'active'], (error, results) => {
         if (error) {
             return callback({ error: 'Failed to create table' });
         }
@@ -33,7 +33,7 @@ router.post('/createTable', (req, res) => {
 // GET tables
 router.get("/tables", (request, response) => {
     const statement = `SELECT * FROM TABLES;`;
-    query(statement, (error, data) => {
+    db.query(statement, (error, data) => {
         if(error) return response.send(error);
         return response.status(200).json(data);
     })
@@ -42,7 +42,7 @@ router.get("/tables", (request, response) => {
 // GET table:id
 router.get("/table/:tableID", (request, response) => {
     const statement = `SELECT * FROM TABLES WHERE id = '${request.params.tableID}'`
-    query(statement, (error, data) => {
+    db.query(statement, (error, data) => {
         if(error) return response.send(error);
         return response.status(200).json(data);
     })
@@ -50,4 +50,4 @@ router.get("/table/:tableID", (request, response) => {
 
 // -------------------------------------------------------
 
-export default router;
+module.exports = router;
