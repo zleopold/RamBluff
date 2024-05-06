@@ -6,10 +6,16 @@ const cors = require('cors');
 const socketIO = require('socket.io');
 const Player = require('./Logic/player.js');
 const Dealer = require('./Logic/dealer.js');
+const db = require("./Database/connection");
 //---------------------------------------
 
+// Route definition
+app.get('/', (req, res) => {
+  res.send('Hello, world! This is the root endpoint.');
+});
+
 // API Routes
-const { utilRoutes, adminRoutes } = require("./API/routes");
+// const { utilRoutes, adminRoutes } = require("./API/routes");
 const { table } = require('console');
 
 const app = express();
@@ -17,7 +23,29 @@ const port = 8080;
 const server = http.createServer(app);
 const ENDPOINT = process.env.NODE_APP_FRONTEND_ENDPOINT;
 
+const createTable = (callback) => {
+  console.log('createTable Called');
+  const gameId = uuidv4();
+  console.log('Game created:', gameId);
+  const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
+  db.query(insertSql, [gameId, 'active'], (error, results) => {
+    if (error) {
+      return callback({ error: 'Failed to create table' });
+    }
 
+    callback(null, { gameId });
+  });
+};
+
+
+app.post('/admin/createTable', (req, res) => {
+  createTable((error, result) => {
+    if (error) {
+      return res.status(500).json(error)
+    }
+    res.status(200).json(result);
+  });
+});
 
 
 // req response format
@@ -40,8 +68,8 @@ const io = socketIO(server, {
   },
 });
 // API Routes
-app.use("/admin", adminRoutes);
-app.use("/util", utilRoutes);
+//app.use("/admin", adminRoutes);
+//app.use("/util", utilRoutes);
 
 // Holds players and dealers in all rooms
 const rooms = new Map();
@@ -49,6 +77,9 @@ const dealers = new Map();
 
 // This is to stop dealerTurn from being caught multiple times
 const endRound = new Map();
+
+
+
 
 
 function calculateHand(hand) {
@@ -64,7 +95,7 @@ function calculateHand(hand) {
       let face = curCard.charAt(0);
       if (face === 'J' || face === 'Q' || face === 'K') {
         total += 10;
-      } else if (curCard.length === 3) { 
+      } else if (curCard.length === 3) {
         total += 10;
       } else {
         total += parseInt(face);
@@ -120,13 +151,13 @@ io.on('connection', (socket) => {
       if (player.seat == 0) {
         socket.emit('setHost');
       }
-      
+
       // Sets seat on front end, for mapping of players
       socket.emit('setSeat', player);
 
       // Sets player object on front end for logic checks
       socket.emit('setPlayer', player);
-  // Sends new player to player list to all clients
+      // Sends new player to player list to all clients
       io.to(tableId).emit('satDown', players);
     } else {
       socket.emit('noSeats');

@@ -7,10 +7,9 @@ const LaunchGame = () => {
 
         try{
             const response = await axios.post(ENDPOINT + `/admin/createTable`);
-            console.log('GameID:' , response.data.gameId);
             const gameId = response.data.gameId;
             console.log('GameID:', gameId);
-            window.location.href = `/game/${gameId}`;
+           // window.location.href = `/game/${gameId}`;
         } catch (error){
             console.error('Error creating table:', error);
             console.error('Error response:', error.response);
