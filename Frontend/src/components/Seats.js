@@ -32,6 +32,7 @@ const Seats = () => {
     })
 
     socket.on('satDown', (players) => {
+      alert('SatDown')
       setPlayerData(players);
     })
 
