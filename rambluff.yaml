@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: seanberlin/frontend:1.0.0
+        image: seanberlin/frontend:1.0.6
         ports:
         - containerPort: 3000
         env:
@@ -40,7 +40,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: seanberlin/backend:1.0.0
+        image: seanberlin/backend:1.0.4
         ports:
         - containerPort: 8080
         env:
@@ -65,6 +65,6 @@ spec:
     spec:
       containers:
       - name: database
-        image: seanberlin/database:1.0.0
+        image: seanberlin/database:1.0.4
         ports:
         - containerPort: 3306
