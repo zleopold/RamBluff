@@ -68,7 +68,7 @@ const createTable = (callback) => {
   });
 };
 
-app.post('/createTable', (req, res) => {
+app.post('/', (req, res) => {
   createTable((error, result) => {
       if (error) {
           return res.status(500).json(error)
