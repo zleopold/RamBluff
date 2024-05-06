@@ -6,7 +6,7 @@ const LaunchGame = () => {
     const handleStartGame = async () => {
 
         try {
-            const response = await axios.post(ENDPOINT + `/admin/createTable`);
+            const response = await axios.post(ENDPOINT + `/createTable`);
             const gameId = response.data.gameId;
             console.log('GameID:', gameId);
             window.location.href = `/game/${gameId}`;
