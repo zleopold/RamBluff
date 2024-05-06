@@ -5,12 +5,12 @@ const ENDPOINT = process.env.REACT_APP_SERVER_ENDPOINT;
 const LaunchGame = () => {
     const handleStartGame = async () => {
 
-        try{
+        try {
             const response = await axios.post(ENDPOINT + `/admin/createTable`);
             const gameId = response.data.gameId;
             console.log('GameID:', gameId);
-           // window.location.href = `/game/${gameId}`;
-        } catch (error){
+            window.location.href = `/game/${gameId}`;
+        } catch (error) {
             console.error('Error creating table:', error);
             console.error('Error response:', error.response);
         }
