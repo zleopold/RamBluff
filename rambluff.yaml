@@ -1,0 +1,70 @@
+# deployments.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: <frontend_image_tag>
+        ports:
+        - containerPort: 3000
+        env:
+        - name: REACT_APP_SERVER_ENDPOINT
+          value: "http://backend:8080"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: <backend_image_tag>
+        ports:
+        - containerPort: 8080
+        env:
+        - name: NODE_APP_FRONTEND_ENDPOINT
+          value: "http://frontend:3000"
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+  template:
+    metadata:
+      labels:
+        app: database
+    spec:
+      containers:
+      - name: database
+        image: <database_image_tag>
+        ports:
+        - containerPort: 3306
