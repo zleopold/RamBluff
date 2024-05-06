@@ -17,7 +17,7 @@ const db = require("./Database/connection");
 const { table } = require('console');
 
 const app = express();
-const port = 8080;
+const port = process.env.NODE_APP_PORT;
 const server = http.createServer(app);
 const ENDPOINT = process.env.NODE_APP_FRONTEND_ENDPOINT;
 
