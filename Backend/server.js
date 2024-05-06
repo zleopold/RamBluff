@@ -60,20 +60,20 @@ const createTable = (callback) => {
   console.log('Game created:', gameId);
   const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
   db.query(insertSql, [gameId, 'active'], (error, results) => {
-      if (error) {
-          return callback({ error: 'Failed to create table' });
-      }
+    if (error) {
+      return callback({ error: 'Failed to create table' });
+    }
 
-      callback(null, { gameId });
+    callback(null, { gameId });
   });
 };
 
 app.post('/', (req, res) => {
   createTable((error, result) => {
-      if (error) {
-          return res.status(500).json(error)
-      }
-      res.status(200).json(result);
+    if (error) {
+      return res.status(500).json(error)
+    }
+    res.status(200).json(result);
   });
 });
 
@@ -110,6 +110,14 @@ function calculateHand(hand) {
 
 
 io.on('connection', (socket) => {
+  socket.on('createTable', ({ gameiD }) => {
+    const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
+    db.query(insertSql, [gameId, 'active'], (error, results) => {
+      if (error) {
+        return 'Failed to create table';
+      }
+    });
+  });
   socket.on('joinRoom', (tableId) => {
     socket.join(tableId);
 
