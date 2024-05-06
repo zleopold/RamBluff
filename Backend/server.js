@@ -13,7 +13,7 @@ const db = require("./Database/connection");
 
 
 // API Routes
-const { utilRoutes, adminRoutes } = require("./API/routes");
+// const { utilRoutes, adminRoutes } = require("./API/routes");
 const { table } = require('console');
 
 const app = express();
@@ -45,19 +45,37 @@ const io = socketIO(server, {
   },
 });
 // API Routes
-app.use("/admin", adminRoutes);
-app.use("/util", utilRoutes);
+//app.use("/admin", adminRoutes);
+//app.use("/util", utilRoutes);
 
 // Holds players and dealers in all rooms
 const rooms = new Map();
 const dealers = new Map();
-
 // This is to stop dealerTurn from being caught multiple times
 const endRound = new Map();
 
+const createTable = (callback) => {
+  console.log('createTable Called');
+  const gameId = uuidv4();
+  console.log('Game created:', gameId);
+  const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
+  db.query(insertSql, [gameId, 'active'], (error, results) => {
+      if (error) {
+          return callback({ error: 'Failed to create table' });
+      }
 
+      callback(null, { gameId });
+  });
+};
 
-
+app.post('/createTable', (req, res) => {
+  createTable((error, result) => {
+      if (error) {
+          return res.status(500).json(error)
+      }
+      res.status(200).json(result);
+  });
+});
 
 function calculateHand(hand) {
   let total = 0;
