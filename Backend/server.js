@@ -110,7 +110,7 @@ function calculateHand(hand) {
 
 
 io.on('connection', (socket) => {
-  socket.on('createTable', ({ gameiD }) => {
+  socket.on('createTable', ({ gameId }) => {
     const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
     db.query(insertSql, [gameId, 'active'], (error, results) => {
       if (error) {
@@ -456,6 +456,6 @@ io.on('connection', (socket) => {
 
 });
 
-server.listen(port, () => {
+server.listen(port, '0.0.0.0', () => {
   console.log(`Server is running on port ${port}`);
 });
