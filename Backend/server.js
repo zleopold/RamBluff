@@ -25,31 +25,6 @@ app.get('/', (req, res) => {
   res.send('Hello, world! This is the root endpoint.');
 });
 
-const createTable = (callback) => {
-  console.log('createTable Called');
-  const gameId = uuidv4();
-  console.log('Game created:', gameId);
-  const insertSql = 'INSERT INTO games (id, status) VALUES (?, ?)';
-  db.query(insertSql, [gameId, 'active'], (error, results) => {
-    if (error) {
-      return callback({ error: 'Failed to create table' });
-    }
-
-    callback(null, { gameId });
-  });
-};
-
-
-app.post('/admin/createTable', (req, res) => {
-  createTable((error, result) => {
-    if (error) {
-      return res.status(500).json(error)
-    }
-    res.status(200).json(result);
-  });
-});
-
-
 // req response format
 app.use(bodyParser.json());
 
