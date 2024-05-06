@@ -1,3 +1,3 @@
-const adminRoutes = require("./admin");
-const utilRoutes = require("./util");
-module.exports = {adminRoutes, utilRoutes};
+import adminRoutes from "./admin";
+import utilRoutes from "./util";
+export default {adminRoutes, utilRoutes};

@@ -10,18 +10,20 @@ const db = require("./Database/connection");
 //---------------------------------------
 
 // Route definition
-app.get('/', (req, res) => {
-  res.send('Hello, world! This is the root endpoint.');
-});
+
 
 // API Routes
-// const { utilRoutes, adminRoutes } = require("./API/routes");
+const { utilRoutes, adminRoutes } = require("./API/routes").default;
 const { table } = require('console');
 
 const app = express();
 const port = 8080;
 const server = http.createServer(app);
 const ENDPOINT = process.env.NODE_APP_FRONTEND_ENDPOINT;
+
+app.get('/', (req, res) => {
+  res.send('Hello, world! This is the root endpoint.');
+});
 
 const createTable = (callback) => {
   console.log('createTable Called');
@@ -68,8 +70,8 @@ const io = socketIO(server, {
   },
 });
 // API Routes
-//app.use("/admin", adminRoutes);
-//app.use("/util", utilRoutes);
+app.use("/admin", adminRoutes);
+app.use("/util", utilRoutes);
 
 // Holds players and dealers in all rooms
 const rooms = new Map();
